@@ -1,11 +1,12 @@
-// HostScreen.js
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 const HostScreen = () => {
-    const [gameCode, setGameCode] = useState( Math.random().toString(36).substring(2, 8) );
+    const [gameCode, setGameCode] = useState(Math.random().toString(36).substring(2, 8));
     const [playerCount, setPlayerCount] = useState(0);
+    const [playersFinished, setPlayersFinished] = useState(0);
     const [socket, setSocket] = useState(null);
+    const [gameStarted, setGameStarted] = useState(false);
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
@@ -26,13 +27,23 @@ const HostScreen = () => {
             setPlayerCount(count);
         });
 
-        return () => newSocket.disconnect();
+        // Listening for the "updatePlayersFinished" event and updating state
+        newSocket.on('updatePlayersFinished', ({ count }) => {
+            console.log('✅ Received updatePlayersFinished:', count);
+            setPlayersFinished(count);
+        });
+
+        return () => {
+            newSocket.disconnect();
+            newSocket.off('updatePlayersFinished'); // Clean up the event listener on unmount
+        };
     }, [gameCode]);
 
     const handleStartGame = () => {
         if (socket) {
             socket.emit('startGame', { gameCode });
             alert('Game is starting!');
+            setGameStarted(true);
         }
     };
 
@@ -41,7 +52,8 @@ const HostScreen = () => {
             <h1>Host Screen</h1>
             <p>Game Code: {gameCode}</p>
             <p>Players Joined: {playerCount}</p>
-            <button onClick={handleStartGame}>Start Game</button>
+            <p>Players Finished: {playersFinished}</p>
+            {!gameStarted && <button onClick={handleStartGame}>Start Game</button>}
         </div>
     );
 };

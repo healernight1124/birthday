@@ -1,4 +1,3 @@
-// server.mjs
 import express from 'express';
 import http from 'http';
 import { Server as socketIo } from 'socket.io';
@@ -6,7 +5,6 @@ import portfinder from 'portfinder';
 
 const app = express();
 
-// Middleware to handle CORS
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
@@ -19,22 +17,21 @@ app.use((req, res, next) => {
 });
 
 const server = http.createServer(app);
-const io = new socketIo(server,{
+const io = new socketIo(server, {
     cors: {
         origin: 'http://localhost:3001',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
-        credentails : true
+        credentials: true
     }
 });
 
-const activeGames = {}; // Store active game rooms and player counts
-const scoreboard = {}; // Store scores for each game
+const activeGames = {};
+let scoreboard = [];
 
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    // Create a new game
     socket.on('createGame', ({ gameCode }) => {
         if (!activeGames[gameCode]) {
             activeGames[gameCode] = { players: 0 };
@@ -48,12 +45,12 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Player joins a game
     socket.on('join', ({ gameCode, name }) => {
         if (activeGames[gameCode]) {
             socket.join(gameCode);
             activeGames[gameCode].players += 1;
-            console.log(`${name} joined game: ${gameCode}`);
+            scoreboard[gameCode].push({ name: name, score: 0 });
+            console.log(`${name} joined game: ${gameCode}, scoreboard: ${JSON.stringify(scoreboard[gameCode])}`);
             socket.emit('joinResponse', { valid: true });
             updatePlayerCount(gameCode);
         } else {
@@ -61,23 +58,37 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Start the game (only triggers on player screens)
     socket.on('startGame', ({ gameCode }) => {
         if (activeGames[gameCode]) {
-            console.log(`Game started for: ${gameCode}`);
-            io.to(gameCode).emit('startGame'); // Notify all players
+            console.log(`Game started for: ${gameCode}, scoreboard: ${JSON.stringify(scoreboard[gameCode])}`);
+            io.to(gameCode).emit('startGame', {gameCode});
         }
     });
 
-    // Player finishes the game
     socket.on('finishGame', ({ gameCode, name, score }) => {
-        if (scoreboard[gameCode]) {
-            scoreboard[gameCode].push({ name, score });
-            io.to(gameCode).emit('updateScoreboard', { name, score });
+        console.log(`Player ${name} finished with score: ${score}`);
+        console.log(`Current scoreboard: ${JSON.stringify(scoreboard)}`);
+        console.log(`Current gameCode: ${gameCode}`);
+
+        if (!scoreboard[gameCode]) {
+            console.error(`scoreboard[${gameCode}] is undefined`);
+            return;
         }
+
+        const playerIndex = scoreboard[gameCode].findIndex(player => player.name === name);
+        if (playerIndex !== -1) {
+            scoreboard[gameCode][playerIndex].score = score;
+        } else {
+            scoreboard[gameCode].push({ name, score });
+        }
+        io.to(gameCode).emit('updateScoreboard', { name, score });
     });
 
-    // Player disconnects
+    socket.on('playerFinished', ({ gameCode }) => {
+        console.log(`Player finished: ${socket.id}`);
+        updatePlayersFinished(gameCode);
+    });
+
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
         for (const gameCode in activeGames) {
@@ -85,19 +96,24 @@ io.on('connection', (socket) => {
                 activeGames[gameCode].players -= 1;
                 updatePlayerCount(gameCode);
                 if (activeGames[gameCode].players <= 0) {
-                    delete activeGames[gameCode]; // Cleanup empty games
-                    delete scoreboard[gameCode]; // Cleanup scoreboard
+                    delete activeGames[gameCode];
+                    delete scoreboard[gameCode];
                 }
                 break;
             }
         }
     });
 
-    // Helper: Update player count
     function updatePlayerCount(gameCode) {
         const count = activeGames[gameCode]?.players || 0;
         console.log(`Updating player count for ${gameCode}: ${count}`);
         io.to(gameCode).emit('updatePlayerCount', { count });
+    }
+
+    function updatePlayersFinished(gameCode) {
+        const finishedCount = 1;
+        console.log(`Updating finished player count for ${gameCode}: ${finishedCount}`);
+        io.to(gameCode).emit('updatePlayersFinished', { count: finishedCount });
     }
 });
 

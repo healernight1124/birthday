@@ -21,8 +21,9 @@ const JoinScreen = () => {
             }
         });
 
-        newSocket.on('startGame', () => {
-            navigate('/game');
+        newSocket.on('startGame', ({gameCode}) => {
+            console.log(`navigating to so the game ${gameCode} is starting!`);
+            navigate(`/game/${gameCode}`);
         });
 
         return () => newSocket.disconnect();
