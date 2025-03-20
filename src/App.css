@@ -1,38 +1,39 @@
-.App {
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-image: url('/public/bg.jpg'); /* Direkt aus dem "public"-Ordner */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html, body {
+    @apply h-screen w-screen flex flex-col items-center justify-center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+
+@font-face {
+    font-family: 'August Script Bold';
+    src: url('/public/fonts/August_Script_Bold_Free.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+
+.font-august {
+    font-family: 'August Script Bold', cursive;
 }
 
-.App-link {
-  color: #61dafb;
+@font-face {
+    font-family: 'Playwrite US Modern';
+    src: url('/public/fonts/PlaywriteUSModern-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.font-playwrite {
+    font-family: 'Playwrite US Modern', cursive;
 }

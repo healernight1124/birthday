@@ -41,16 +41,60 @@ const Scoreboard = () => {
         };
     }, [gameCode]);
 
+    // We only need the top 3 and the last player
+    const filteredScoreboard = [...scoreboard].slice(0, 3); // Get the top 3 players
+    const lastPlayer = scoreboard[scoreboard.length - 1]; // Get the last player
+
+    // Adjusting font size and color based on the rank
+    const getFontSizeClass = (rank) => {
+        switch (rank) {
+            case 1:
+                return "text-4xl md:text-5xl"; // First place (largest)
+            case 2:
+                return "text-3xl md:text-4xl"; // Second place
+            case 3:
+                return "text-2xl md:text-3xl"; // Third place
+            default:
+                return "text-1xl md:text-2xl"; // Last place (smallest)
+        }
+    };
+
+    const getColorClass = (rank) => {
+        switch (rank) {
+            case 1:
+                return "bg-[#d4af37] text-white"; // First place - Gold color
+            case 2:
+                return "bg-[#c5c9c7] text-white"; // Second place - Silver color
+            case 3:
+                return "bg-[#a97142] text-white"; // Third place - Bronze color
+            default:
+                return "bg-[#1f262a] text-white"; // Last place - Gray color
+        }
+    };
+
     return (
-        <div>
-            <h1>Scoreboard</h1>
-            <ul>
-                {scoreboard.map((player, index) => (
-                    <li key={index}>
-                        {index + 1}. {player.name} - {player.score} points
-                    </li>
-                ))}
-            </ul>
+        <div className="flex flex-col items-center bg-[#D680FF] bg-opacity-70 rounded-lg p-8 w-full max-w-3xl text-center space-y-6">
+            <h1 className="font-august text-4xl md:text-5xl text-white">Scoreboard</h1>
+
+            {/* Top 3 players */}
+            {filteredScoreboard.map((player, index) => (
+                <div
+                    key={player.name}
+                    className={`font-bold ${getFontSizeClass(index + 1)} ${getColorClass(index + 1)} px-8 py-4 rounded-lg shadow-md`}
+                >
+                    {index + 1}. {player.name} - {player.score} points
+                </div>
+            ))}
+
+            {/* Last place */}
+            {lastPlayer && (
+                <div
+                    key={lastPlayer.name}
+                    className={`font-bold ${getFontSizeClass('last')} ${getColorClass('last')} px-8 py-4 rounded-lg shadow-md`}
+                >
+                    Last: {lastPlayer.name} - {lastPlayer.score} points
+                </div>
+            )}
         </div>
     );
 };

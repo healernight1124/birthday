@@ -40,16 +40,38 @@ const JoinScreen = () => {
 
         if (socket) {
             socket.emit('join', { gameCode, name });
+            localStorage.setItem('playerName', name); // Store player name in local storage
         }
     };
 
     return (
-        <div>
-            <h1>Join Game</h1>
-            <input placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} />
-            <input placeholder="Game Code" value={gameCode} onChange={(e) => setGameCode(e.target.value)} />
-            {!hasJoined && <button onClick={handleJoinGame}>Join</button>}
+        <div className="flex flex-col items-center bg-[#D680FF] bg-opacity-70 rounded-lg p-10 w-full max-w-3xl text-center space-y-8">
+            <h1 className="font-august text-4xl md:text-6xl text-white">Spiel beitreten</h1>
+
+            <input
+                className="bg-white text-[#30193A] placeholder-black text-xl md:text-2xl px-6 py-3 rounded-lg w-full max-w-xs"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
+
+            <input
+                className="bg-white text-[#30193A] placeholder-black text-xl md:text-2xl px-6 py-3 rounded-lg w-full max-w-xs"
+                placeholder="Spiel Code"
+                value={gameCode}
+                onChange={(e) => setGameCode(e.target.value)}
+            />
+
+            {!hasJoined && (
+                <button
+                    className="bg-[#D680FF] text-white text-lg md:text-xl px-6 py-3 rounded-lg opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg"
+                    onClick={handleJoinGame}
+                >
+                    Beitreten
+                </button>
+            )}
         </div>
+
     );
 };
 

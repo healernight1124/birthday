@@ -1,4 +1,5 @@
 import React from 'react';
+import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HostScreen from './components/HostScreen';
 import JoinScreen from './components/JoinScreen';
@@ -6,6 +7,7 @@ import GameScreen from './components/GameScreen';
 import ThankYou from './components/ThankYou';
 import Scoreboard from "./components/Scoreboard";
 import Welcome from "./components/Welcome";
+
 
 function App() {
     return (
