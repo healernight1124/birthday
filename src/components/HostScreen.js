@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 const HostScreen = () => {
     const [gameCode, setGameCode] = useState(Math.random().toString(36).substring(2, 8));
@@ -7,6 +8,7 @@ const HostScreen = () => {
     const [playersFinished, setPlayersFinished] = useState(0);
     const [socket, setSocket] = useState(null);
     const [gameStarted, setGameStarted] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
@@ -50,6 +52,10 @@ const HostScreen = () => {
         }
     };
 
+    const handleViewScoreboard = () => {
+        navigate(`/scoreboard/${gameCode}`);
+    };
+
     return (
         <div>
             <h1>Host Screen</h1>
@@ -57,6 +63,7 @@ const HostScreen = () => {
             <p>Players Joined: {playerCount}</p>
             <p>Players Finished: {playersFinished}</p>
             {!gameStarted && <button onClick={handleStartGame}>Start Game</button>}
+            <button onClick={handleViewScoreboard}>View Scoreboard</button>
         </div>
     );
 };

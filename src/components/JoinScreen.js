@@ -1,4 +1,3 @@
-// JoinScreen.js
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
@@ -21,8 +20,8 @@ const JoinScreen = () => {
             }
         });
 
-        newSocket.on('startGame', ({gameCode}) => {
-            console.log(`navigating to so the game ${gameCode} is starting!`);
+        newSocket.on('startGame', ({ gameCode }) => {
+            console.log(`Navigating to game ${gameCode} is starting!`);
             navigate(`/game/${gameCode}`);
         });
 
@@ -32,6 +31,7 @@ const JoinScreen = () => {
     const handleJoinGame = () => {
         if (socket) {
             socket.emit('join', { gameCode, name });
+            localStorage.setItem('playerName', name); // Store player name in local storage
         }
     };
 

@@ -117,6 +117,15 @@ io.on('connection', (socket) => {
     }
 });
 
+app.get('/scoreboard/:gameCode', (req, res) => {
+    const { gameCode } = req.params;
+    if (scoreboard[gameCode]) {
+        res.json(scoreboard[gameCode]);
+    } else {
+        res.status(404).json({ error: 'Game not found' });
+    }
+});
+
 const startServer = (port) => {
     server.listen(port, (err) => {
         if (err) {

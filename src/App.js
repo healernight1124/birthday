@@ -5,16 +5,19 @@ import JoinScreen from './components/JoinScreen';
 import GameScreen from './components/GameScreen';
 import ThankYou from './components/ThankYou';
 import Scoreboard from "./components/Scoreboard";
+import Welcome from "./components/Welcome";
 
 function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<HostScreen />} />
+                <Route path="/" element={<Welcome />} />
+                <Route path="/host" element={<HostScreen />} />
                 <Route path="/join" element={<JoinScreen />} />
                 <Route path="/game/:gameCode" element={<GameScreen />} />
                 <Route path="/thank-you" element={<ThankYou />} />
                 <Route path="/scoreboard/:gameCode" element={<Scoreboard />} />
+
             </Routes>
         </Router>
     );

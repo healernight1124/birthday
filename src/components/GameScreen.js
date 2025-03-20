@@ -4,7 +4,7 @@ import questions from '../utils/questions';
 import socket from '../socket';
 
 const GameScreen = () => {
-    const { gameCode } = useParams();  // Get gameCode from URL params
+    const { gameCode } = useParams();
     const [category, setCategory] = useState(null);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const [usedQuestions, setUsedQuestions] = useState(new Set());
@@ -12,13 +12,20 @@ const GameScreen = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [quizOver, setQuizOver] = useState(false);
     const [playersFinished, setPlayersFinished] = useState(0);
+    const [totalScore, setTotalScore] = useState(0);
     const navigate = useNavigate();
+    const playerName = localStorage.getItem('playerName'); // Retrieve player name from local storage
 
-    const categories = Object.keys(questions);
+    const categories = [
+        { name: '10', points: 10 },
+        { name: '20', points: 20 },
+        { name: '50', points: 50 },
+        { name: '100', points: 100 }
+    ];
 
     useEffect(() => {
         if (category) {
-            const availableQuestions = questions[category].filter(q => !usedQuestions.has(q.question));
+            const availableQuestions = questions[category.name].filter(q => !usedQuestions.has(q.question));
 
             if (availableQuestions.length === 0) {
                 alert('No more questions in this category!');
@@ -35,10 +42,15 @@ const GameScreen = () => {
     }, [category]);
 
     const handleAnswer = (answer) => {
-        alert(answer === selectedQuestions[currentQuestionIndex].correct ? 'Correct!' : 'Wrong!');
-        if (answer === selectedQuestions[currentQuestionIndex].correct) {
-            socket.emit('finishGame', { gameCode, name: 'PlayerName', score: 10 });  // Use dynamic gameCode
+        const currentQuestion = selectedQuestions[currentQuestionIndex];
+        if (answer === currentQuestion.correct) {
+            setTotalScore(prevScore => prevScore + category.points);
+            console.log(`Correct! You earned ${category.points} points. Total score: ${totalScore + category.points}`);
+            socket.emit('finishGame', { gameCode, name: playerName, score: totalScore + category.points });
+        } else {
+            console.log('Wrong!');
         }
+
         if (currentQuestionIndex < 4) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setCategory(null);
@@ -50,10 +62,10 @@ const GameScreen = () => {
 
     useEffect(() => {
         if (quizOver) {
-            socket.emit('playerFinished', { gameCode });  // Emit event after quiz is over
+            socket.emit('playerFinished', { gameCode, name: playerName, score: totalScore });
             navigate('/thank-you');
         }
-    }, [quizOver, navigate, gameCode]);
+    }, [quizOver, navigate, gameCode, totalScore, playerName]);
 
     useEffect(() => {
         socket.on('updatePlayersFinished', ({ count }) => {
@@ -70,8 +82,8 @@ const GameScreen = () => {
             <h2>Game Screen</h2>
             {!category ? (
                 categories.map((cat) => (
-                    <button key={cat} onClick={() => setCategory(cat)}>
-                        {cat}
+                    <button key={cat.name} onClick={() => setCategory(cat)}>
+                        {cat.name} ({cat.points} points)
                     </button>
                 ))
             ) : (

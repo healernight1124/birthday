@@ -1,24 +1,45 @@
-// Scoreboard.js
 import React, { useState, useEffect } from 'react';
-import socket from '../socket';
-import {useParams} from "react-router-dom"; // Use shared socket instance
+import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 const Scoreboard = () => {
     const { gameCode } = useParams();
     const [scoreboard, setScoreboard] = useState([]);
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Listen for real-time scoreboard updates
-        socket.on('updateScoreboard', (scoreData) => {
-            setScoreboard((prev) => {
-                const updatedScores = [...prev, scoreData];
-                return updatedScores.sort((a, b) => b.score - a.score); // Sort by score descending
+        const newSocket = io('http://localhost:3000');
+        setSocket(newSocket);
+
+        // Fetch the initial scoreboard data from the server
+        fetch(`http://localhost:3000/scoreboard/${gameCode}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => setScoreboard(data))
+            .catch(error => console.error('Error fetching scoreboard:', error));
+
+        // Listen for the updateScoreboard event to update the scoreboard in real-time
+        newSocket.on('updateScoreboard', ({ name, score }) => {
+            setScoreboard((prevScoreboard) => {
+                const updatedScoreboard = [...prevScoreboard];
+                const playerIndex = updatedScoreboard.findIndex(player => player.name === name);
+                if (playerIndex !== -1) {
+                    updatedScoreboard[playerIndex].score = score;
+                } else {
+                    updatedScoreboard.push({ name, score });
+                }
+                return updatedScoreboard.sort((a, b) => b.score - a.score); // Sort the scoreboard by score, descending
             });
         });
 
-        // Cleanup on unmount
-        return () => socket.off('updateScoreboard');
-    }, []);
+        return () => {
+            newSocket.disconnect();
+        };
+    }, [gameCode]);
 
     return (
         <div>
@@ -26,7 +47,7 @@ const Scoreboard = () => {
             <ul>
                 {scoreboard.map((player, index) => (
                     <li key={index}>
-                        {player.name}: {player.score} points
+                        {index + 1}. {player.name} - {player.score} points
                     </li>
                 ))}
             </ul>
