@@ -19,7 +19,7 @@ const Scoreboard = () => {
                 }
                 return response.json();
             })
-            .then(data => setScoreboard(data))
+            .then(data => setScoreboard(data.sort((a, b) => b.score - a.score))) // Sort the scoreboard by score, descending
             .catch(error => console.error('Error fetching scoreboard:', error));
 
         // Listen for the updateScoreboard event to update the scoreboard in real-time

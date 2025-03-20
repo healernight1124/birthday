@@ -47,18 +47,23 @@ io.on('connection', (socket) => {
 
     socket.on('join', ({ gameCode, name }) => {
         if (activeGames[gameCode]) {
-            socket.join(gameCode);
-            activeGames[gameCode].players += 1;
-            scoreboard[gameCode].push({ name: name, score: 0 });
-            console.log(`${name} joined game: ${gameCode}, scoreboard: ${JSON.stringify(scoreboard[gameCode])}`);
-            socket.emit('joinResponse', { valid: true });
-            updatePlayerCount(gameCode);
+            const playerExists = scoreboard[gameCode]?.some(player => player.name === name);
+            if(!playerExists) {
+                socket.join(gameCode);
+                activeGames[gameCode].players += 1;
+                scoreboard[gameCode].push({ name: name, score: 0 });
+                console.log(`${name} joined game: ${gameCode}, scoreboard: ${JSON.stringify(scoreboard[gameCode])}`);
+                socket.emit('joinResponse', { valid: true, nameExists: false });
+                updatePlayerCount(gameCode);
+            } else {
+                socket.emit('joinResponse', { valid: true, nameExists: true });
+            }
         } else {
-            socket.emit('joinResponse', { valid: false });
+            socket.emit('joinResponse', { valid: false, nameExists: false });
         }
     });
 
-    socket.on('startGame', ({ gameCode }) => {
+    socket.on('startGame', ({ gameCode}) => {
         if (activeGames[gameCode]) {
             console.log(`Game started for: ${gameCode}`);
             io.to(gameCode).emit('startGame', {gameCode});
@@ -67,7 +72,7 @@ io.on('connection', (socket) => {
 
     socket.on('finishGame', ({ gameCode, name, score }) => {
         console.log(`Player ${name} finished with score: ${score}`);
-        console.log(`Current scoreboard: ${JSON.stringify(scoreboard)}`);
+        console.log(`Current scoreboard: ${JSON.stringify(scoreboard[gameCode])}`);
         console.log(`Current gameCode: ${gameCode}`);
 
         if (!scoreboard[gameCode]) {

@@ -6,32 +6,40 @@ const JoinScreen = () => {
     const [name, setName] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [socket, setSocket] = useState(null);
+    const [hasJoined, setHasJoined] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
 
-        newSocket.on('joinResponse', ({ valid }) => {
-            if (valid) {
+        newSocket.on('joinResponse', ({ valid, nameExists }) => {
+            if (valid && !nameExists) {
                 console.log('Joined game successfully.');
-            } else {
+                setHasJoined(true);
+            } else if (!valid) {
                 alert('Invalid game code.');
+            } else if (nameExists) {
+                alert('Name already exists in this game.');
             }
         });
 
         newSocket.on('startGame', ({ gameCode }) => {
-            console.log(`Navigating to game ${gameCode} is starting!`);
-            navigate(`/game/${gameCode}`);
+            console.log(`Navigating to game ${gameCode} is starting! ${name} get ready!`);
+            navigate(`/game/${gameCode}/${name}`);
         });
 
         return () => newSocket.disconnect();
-    }, [navigate]);
+    }, [navigate, name]);
 
     const handleJoinGame = () => {
+        if (!name || !gameCode) {
+            alert('Please enter your name and the game code.');
+            return;
+        }
+
         if (socket) {
             socket.emit('join', { gameCode, name });
-            localStorage.setItem('playerName', name); // Store player name in local storage
         }
     };
 
@@ -40,7 +48,7 @@ const JoinScreen = () => {
             <h1>Join Game</h1>
             <input placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} />
             <input placeholder="Game Code" value={gameCode} onChange={(e) => setGameCode(e.target.value)} />
-            <button onClick={handleJoinGame}>Join</button>
+            {!hasJoined && <button onClick={handleJoinGame}>Join</button>}
         </div>
     );
 };

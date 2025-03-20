@@ -4,7 +4,7 @@ import questions from '../utils/questions';
 import socket from '../socket';
 
 const GameScreen = () => {
-    const { gameCode } = useParams();
+    const { gameCode, playerName } = useParams();
     const [category, setCategory] = useState(null);
     const [selectedQuestions, setSelectedQuestions] = useState([]);
     const [usedQuestions, setUsedQuestions] = useState(new Set());
@@ -14,7 +14,6 @@ const GameScreen = () => {
     const [playersFinished, setPlayersFinished] = useState(0);
     const [totalScore, setTotalScore] = useState(0);
     const navigate = useNavigate();
-    const playerName = localStorage.getItem('playerName'); // Retrieve player name from local storage
 
     const categories = [
         { name: '10', points: 10 },
