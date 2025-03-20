@@ -8,7 +8,7 @@ const Scoreboard = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:3000');
+        const newSocket = io('https://emily-quiz-git-main-hetian-jiangs-projects.vercel.app:3000');
         setSocket(newSocket);
 
         // Fetch the initial scoreboard data from the server

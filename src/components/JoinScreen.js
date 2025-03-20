@@ -10,7 +10,7 @@ const JoinScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const newSocket = io('http://localhost:3000');
+        const newSocket = io('https://emily-quiz-git-main-hetian-jiangs-projects.vercel.app:3000');
         setSocket(newSocket);
 
         newSocket.on('joinResponse', ({ valid, nameExists }) => {
