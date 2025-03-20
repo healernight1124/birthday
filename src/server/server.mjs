@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 const io = new socketIo(server, {
     cors: {
-        origin: 'https://emily-quiz-gsq1e62sm-hetian-jiangs-projects.vercel.app:3001',
+        origin: 'https://emily-quiz-git-main-hetian-jiangs-projects.vercel.app:3001',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true
