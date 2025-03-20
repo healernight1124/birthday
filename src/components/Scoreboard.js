@@ -1,8 +1,10 @@
 // Scoreboard.js
 import React, { useState, useEffect } from 'react';
-import socket from '../socket'; // Use shared socket instance
+import socket from '../socket';
+import {useParams} from "react-router-dom"; // Use shared socket instance
 
 const Scoreboard = () => {
+    const { gameCode } = useParams();
     const [scoreboard, setScoreboard] = useState([]);
 
     useEffect(() => {

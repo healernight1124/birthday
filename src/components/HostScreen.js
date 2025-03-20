@@ -29,8 +29,11 @@ const HostScreen = () => {
 
         // Listening for the "updatePlayersFinished" event and updating state
         newSocket.on('updatePlayersFinished', ({ count }) => {
-            console.log('✅ Received updatePlayersFinished:', count);
-            setPlayersFinished(count);
+            setPlayersFinished(prevPlayersFinished => {
+                const newCount = prevPlayersFinished + count;
+                console.log('✅ Received updatePlayersFinished:', newCount);
+                return newCount;
+            });
         });
 
         return () => {

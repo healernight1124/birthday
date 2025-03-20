@@ -60,7 +60,7 @@ io.on('connection', (socket) => {
 
     socket.on('startGame', ({ gameCode }) => {
         if (activeGames[gameCode]) {
-            console.log(`Game started for: ${gameCode}, scoreboard: ${JSON.stringify(scoreboard[gameCode])}`);
+            console.log(`Game started for: ${gameCode}`);
             io.to(gameCode).emit('startGame', {gameCode});
         }
     });
@@ -112,7 +112,7 @@ io.on('connection', (socket) => {
 
     function updatePlayersFinished(gameCode) {
         const finishedCount = 1;
-        console.log(`Updating finished player count for ${gameCode}: ${finishedCount}`);
+        console.log(`Updating finished player count for ${gameCode}`);
         io.to(gameCode).emit('updatePlayersFinished', { count: finishedCount });
     }
 });
