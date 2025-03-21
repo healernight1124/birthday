@@ -73,6 +73,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
+app.get('/api/config', (req, res) => {
+   res.json({port: process.env.PORT});
+});
+
 app.get('/scoreboard/:gameCode', (req, res) => {
     const { gameCode } = req.params;
     if (scoreboard[gameCode]) {

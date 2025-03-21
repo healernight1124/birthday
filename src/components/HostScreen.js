@@ -11,38 +11,43 @@ const HostScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const newSocket = io(`${process.env.REACT_APP_URL}:${process.env.REACT_APP_SERVER_PORT}`);
-        setSocket(newSocket);
+        const fetchConfig = async () => {
+            const response = await fetch(`/api/config`);
+            const data = await response.json();
+            console.log('Config:', data);
+            const newSocket = io(`${process.env.REACT_APP_URL}:${data.port}`);
+            setSocket(newSocket);
+            newSocket.emit('createGame', { gameCode });
 
-        newSocket.emit('createGame', { gameCode });
-
-        newSocket.on('gameCreated', ({ success }) => {
-            if (success) {
-                console.log('Game created successfully.');
-            } else {
-                alert('Game code already exists.');
-            }
-        });
-
-        newSocket.on('updatePlayerCount', ({ count }) => {
-            console.log('Player count updated:', count);
-            setPlayerCount(count);
-        });
-
-        // Listening for the "updatePlayersFinished" event and updating state
-        newSocket.on('updatePlayersFinished', ({ count }) => {
-            setPlayersFinished(prevPlayersFinished => {
-                const newCount = prevPlayersFinished + count;
-                console.log('✅ Received updatePlayersFinished:', newCount);
-                return newCount;
+            newSocket.on('gameCreated', ({ success }) => {
+                if (success) {
+                    console.log('Game created successfully.');
+                } else {
+                    alert('Game code already exists.');
+                }
             });
-        });
 
-        return () => {
-            newSocket.disconnect();
-            newSocket.off('updatePlayersFinished'); // Clean up the event listener on unmount
-        };
-    }, [gameCode]);
+            newSocket.on('updatePlayerCount', ({ count }) => {
+                console.log('Player count updated:', count);
+                setPlayerCount(count);
+            });
+
+            // Listening for the "updatePlayersFinished" event and updating state
+            newSocket.on('updatePlayersFinished', ({ count }) => {
+                setPlayersFinished(prevPlayersFinished => {
+                    const newCount = prevPlayersFinished + count;
+                    console.log('✅ Received updatePlayersFinished:', newCount);
+                    return newCount;
+                });
+            });
+
+            return () => {
+                newSocket.disconnect();
+                newSocket.off('updatePlayersFinished'); // Clean up the event listener on unmount
+            };
+        }
+        fetchConfig();
+    }, [gameCode, socket]);
 
     const handleStartGame = () => {
         if (socket) {
