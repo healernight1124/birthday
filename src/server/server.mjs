@@ -1,9 +1,9 @@
 import express from 'express';
 import http from 'http';
 import { Server as socketIo } from 'socket.io';
-import portfinder from 'portfinder';
 
 const app = express();
+const PORT = 8080;
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -17,9 +17,13 @@ app.use((req, res, next) => {
 });
 
 const server = http.createServer(app);
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
 const io = new socketIo(server, {
     cors: {
-        origin: 'http://localhost:3001',
+        origin: 'http://localhost:3000',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true
@@ -130,29 +134,3 @@ app.get('/scoreboard/:gameCode', (req, res) => {
         res.status(404).json({ error: 'Game not found' });
     }
 });
-
-const startServer = (port) => {
-    server.listen(port, (err) => {
-        if (err) {
-            if (err.code === 'EADDRINUSE') {
-                console.error(`Port ${port} is already in use. Trying next port...`);
-                portfinder.getPortPromise({ port: port + 1 })
-                    .then((newPort) => {
-                        startServer(newPort);
-                    })
-                    .catch((err) => {
-                        console.error(`No available ports: ${err}`);
-                        process.exit(1);
-                    });
-            } else {
-                console.error(`Error starting server: ${err}`);
-                process.exit(1);
-            }
-        } else {
-            console.log(`Server running on port ${port}`);
-        }
-    });
-};
-
-const PORT = process.env.PORT || 3000;
-startServer(PORT);
