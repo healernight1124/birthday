@@ -73,6 +73,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
+// Catch-all route to handle client-side routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 app.get('/api/config', (req, res) => {
    res.json({port: PORT});
 });
