@@ -47,7 +47,7 @@ const HostScreen = () => {
             };
         }
         fetchConfig();
-    }, [gameCode, socket]);
+    }, [gameCode]);
 
     const handleStartGame = () => {
         if (socket) {
