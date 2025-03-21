@@ -1,6 +1,6 @@
 import express from 'express';
-import http from 'http';
 import { Server as socketIo } from 'socket.io';
+import * as https from "node:https";
 
 const app = express();
 const PORT = 8080;
@@ -16,7 +16,7 @@ app.use((req, res, next) => {
     }
 });
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
