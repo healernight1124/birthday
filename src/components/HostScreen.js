@@ -11,11 +11,11 @@ const HostScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchConfig = async () => {
-            const response = await fetch(`/api/config`);
-            const data = await response.json();
-            console.log('Config:', data);
-            const newSocket = io(`wss://${window.location.hostname}:${data.port}`);
+        // const fetchConfig = async () => {
+        //     const response = await fetch(`/api/config`);
+        //     const data = await response.json();
+        //     console.log('Config:', data);
+            const newSocket = io(`http://${window.location.hostname}:50000`);
             console.log("window.location.hostname: ", window.location.hostname);
             setSocket(newSocket);
             newSocket.emit('createGame', { gameCode });
@@ -46,8 +46,8 @@ const HostScreen = () => {
                 newSocket.disconnect();
                 newSocket.off('updatePlayersFinished'); // Clean up the event listener on unmount
             };
-        }
-        fetchConfig();
+        // }
+        // fetchConfig();
     }, [gameCode]);
 
     const handleStartGame = () => {

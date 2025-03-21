@@ -10,11 +10,11 @@ const JoinScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchConfig = async () => {
-            const response = await fetch(`/api/config`);
-            const data = await response.json();
-            console.log('Config:', data);
-            const newSocket = io(`wss://${window.location.hostname}:${data.port}`);
+        // const fetchConfig = async () => {
+        //     const response = await fetch(`/api/config`);
+        //     const data = await response.json();
+        //     console.log('Config:', data);
+            const newSocket = io(`http://${window.location.hostname}:50000`);
             setSocket(newSocket);
 
             newSocket.on('joinResponse', ({ valid, nameExists }) => {
@@ -34,8 +34,8 @@ const JoinScreen = () => {
             });
 
             return () => newSocket.disconnect();
-        }
-        fetchConfig();
+        // }
+        // fetchConfig();
     }, [navigate, name]);
 
     const handleJoinGame = () => {

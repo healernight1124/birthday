@@ -39,7 +39,7 @@ const startServer = (port) => {
     });
 };
 
-const PORT = process.env.PORT || 50000;
+const PORT = 50000;
 startServer(PORT);
 
 const io = new socketIo(server, {
@@ -68,14 +68,9 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/api/config', (req, res) => {
-    res.json({port: PORT});
-});
-
-// Catch-all route to handle client-side routing
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+// app.get('/api/config', (req, res) => {
+//     res.json({port: PORT});
+// });
 
 app.get('/scoreboard/:gameCode', (req, res) => {
     const { gameCode } = req.params;
@@ -84,6 +79,11 @@ app.get('/scoreboard/:gameCode', (req, res) => {
     } else {
         res.status(404).json({ error: 'Game not found' });
     }
+});
+
+// Catch-all route to handle client-side routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 // Socket.io events

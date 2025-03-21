@@ -8,15 +8,15 @@ const Scoreboard = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const fetchConfig = async () => {
-            const response = await fetch(`/api/config`);
-            const data = await response.json();
-            console.log('Config:', data);
-            const newSocket = io(`wss://${window.location.hostname}:${data.port}`);
+        // const fetchConfig = async () => {
+        //     const response = await fetch(`/api/config`);
+        //     const data = await response.json();
+        //     console.log('Config:', data);
+            const newSocket = io(`http://${window.location.hostname}:50000`);
             setSocket(newSocket);
 
             // Fetch the initial scoreboard data from the server
-            fetch(`wss://${window.location.hostname}:${data.port}/scoreboard/${gameCode}`)
+            fetch(`http://${window.location.hostname}:50000/scoreboard/${gameCode}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -43,8 +43,8 @@ const Scoreboard = () => {
             return () => {
                 newSocket.disconnect();
             };
-        }
-        fetchConfig();
+        // }
+        // fetchConfig();
     }, [gameCode]);
 
     // We only need the top 3 and the last player
