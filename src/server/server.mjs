@@ -3,9 +3,42 @@ import http from 'http';
 import { Server as socketIo } from 'socket.io';
 import portfinder from 'portfinder';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+
 const server = http.createServer(app);
+
+// Start server
+const startServer = (port) => {
+    server.listen(port, (err) => {
+        if (err) {
+            if (err.code === 'EADDRINUSE') {
+                console.error(`Port ${port} is already in use. Trying next port...`);
+                portfinder.getPortPromise({ port: port + 1 })
+                    .then((newPort) => {
+                        startServer(newPort);
+                    })
+                    .catch((err) => {
+                        console.error(`No available ports: ${err}`);
+                        process.exit(1);
+                    });
+            } else {
+                console.error(`Error starting server: ${err}`);
+                process.exit(1);
+            }
+        } else {
+            console.log(`Server running on port ${port}`);
+        }
+    });
+};
+
+const PORT = process.env.PORT || 4000;
+startServer(PORT);
+
 const io = new socketIo(server, {
     cors: {
         origin: '*',
@@ -139,30 +172,3 @@ io.on('connection', (socket) => {
         io.to(gameCode).emit('updatePlayersFinished', { count: finishedCount });
     }
 });
-
-// Start server
-const startServer = (port) => {
-    server.listen(port, (err) => {
-        if (err) {
-            if (err.code === 'EADDRINUSE') {
-                console.error(`Port ${port} is already in use. Trying next port...`);
-                portfinder.getPortPromise({ port: port + 1 })
-                    .then((newPort) => {
-                        startServer(newPort);
-                    })
-                    .catch((err) => {
-                        console.error(`No available ports: ${err}`);
-                        process.exit(1);
-                    });
-            } else {
-                console.error(`Error starting server: ${err}`);
-                process.exit(1);
-            }
-        } else {
-            console.log(`Server running on port ${port}`);
-        }
-    });
-};
-
-const PORT = process.env.PORT || 26728;
-startServer(PORT);
