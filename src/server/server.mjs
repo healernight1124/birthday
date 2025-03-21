@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new socketIo(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: '*',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true
@@ -164,5 +164,5 @@ const startServer = (port) => {
     });
 };
 
-const PORT = process.env.PORT || 4000;
+const PORT = 4000;
 startServer(PORT);
