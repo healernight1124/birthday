@@ -8,11 +8,11 @@ const Scoreboard = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io('https://www.emily-quiz.it.com:4000');
+        const newSocket = io('https://www.emily-quiz.it.com:50000');
         setSocket(newSocket);
 
         // Fetch the initial scoreboard data from the server
-        fetch(`http://https://www.emily-quiz.it.com:4000/scoreboard/${gameCode}`)
+        fetch(`http://https://www.emily-quiz.it.com:50000/scoreboard/${gameCode}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
