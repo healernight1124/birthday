@@ -15,7 +15,8 @@ const HostScreen = () => {
             const response = await fetch(`/api/config`);
             const data = await response.json();
             console.log('Config:', data);
-            const newSocket = io(`${process.env.REACT_APP_URL}:${data.port}`);
+            const newSocket = io(`wss://${window.location.hostname}:${data.port}`);
+            console.log("window.location.hostname: ", window.location.hostname);
             setSocket(newSocket);
             newSocket.emit('createGame', { gameCode });
 

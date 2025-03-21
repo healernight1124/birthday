@@ -44,7 +44,7 @@ startServer(PORT);
 
 const io = new socketIo(server, {
     cors: {
-        origin: process.env.REACT_APP_URL + ':' + process.env.REACT_APP_CLIENT_PORT,
+        origin: `*`,
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true

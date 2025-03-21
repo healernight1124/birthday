@@ -8,7 +8,7 @@ const initSocket = async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        return io(`${process.env.REACT_APP_URL}:${data.port}`);
+        return io(`wss://${window.location.hostname}:${data.port}`);
     } catch (error) {
         console.error('Failed to initialize socket:', error);
         throw error;
