@@ -4,9 +4,10 @@ import { Server as socketIo } from 'socket.io';
 import portfinder from 'portfinder';
 import path from 'path';
 
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
-
 const server = http.createServer(app);
 
 // Start server
@@ -33,12 +34,12 @@ const startServer = (port) => {
     });
 };
 
-const PORT = 50000;
+const PORT = process.env.REACT_APP_SERVER_PORT;
 startServer(PORT);
 
 const io = new socketIo(server, {
     cors: {
-        origin: 'https://www.emily-quiz.it.com:3000',
+        origin: process.env.REACT_APP_URL + ':' + process.env.REACT_APP_CLIENT_PORT,
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true

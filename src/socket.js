@@ -2,6 +2,6 @@
 import { io } from 'socket.io-client';
 
 // Ensure a single shared socket connection
-const socket = io('https://www.emily-quiz.it.com:50000');
+const socket = io(`${process.env.REACT_APP_URL}:${process.env.REACT_APP_SERVER_PORT}`);
 
 export default socket;
