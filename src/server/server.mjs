@@ -38,7 +38,7 @@ startServer(PORT);
 
 const io = new socketIo(server, {
     cors: {
-        origin: '*',
+        origin: 'https://www.emily-quiz.it.com',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true
