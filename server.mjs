@@ -74,7 +74,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/config', (req, res) => {
-   res.json({port: process.env.PORT});
+   res.json({port: PORT});
 });
 
 app.get('/scoreboard/:gameCode', (req, res) => {
