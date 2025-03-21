@@ -11,7 +11,7 @@ const HostScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const newSocket = io('http://localhost:8080');
+        const newSocket = io('https://www.emily-quiz.it.com:8080');
         setSocket(newSocket);
 
         newSocket.emit('createGame', { gameCode });

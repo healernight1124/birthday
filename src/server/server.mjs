@@ -23,7 +23,7 @@ server.listen(PORT, () => {
 
 const io = new socketIo(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: 'https://www.emily-quiz.it.com:3000',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
         credentials: true
