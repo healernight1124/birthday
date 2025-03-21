@@ -72,17 +72,29 @@ const Scoreboard = () => {
         }
     };
 
+    const groupedScoreboard = scoreboard.reduce((acc, player) => {
+        if (!acc[player.score]) {
+            acc[player.score] = [];
+        }
+        acc[player.score].push(player);
+        return acc;
+    }, {});
+
     return (
         <div className="flex flex-col items-center bg-[#D680FF] bg-opacity-70 rounded-lg p-8 w-full max-w-3xl text-center space-y-6">
             <h1 className="font-august text-4xl md:text-5xl text-white">Scoreboard</h1>
 
             {/* Top 3 players */}
-            {filteredScoreboard.map((player, index) => (
-                <div
-                    key={player.name}
-                    className={`font-bold ${getFontSizeClass(index + 1)} ${getColorClass(index + 1)} px-8 py-4 rounded-lg shadow-md`}
-                >
-                    {index + 1}. {player.name} - {player.score} points
+            {Object.keys(groupedScoreboard).sort((a, b) => b - a).map((score, index) => (
+                <div key={score} className="mb-4">
+                    {groupedScoreboard[score].map((player, playerIndex) => (
+                        <div
+                            key={player.name}
+                            className={`font-bold ${getFontSizeClass(index + 1)} ${getColorClass(index + 1)} px-8 py-4 rounded-lg shadow-md`}
+                        >
+                            {index + 1}. {player.name} - {player.score} points
+                        </div>
+                    ))}
                 </div>
             ))}
 
