@@ -3,9 +3,14 @@ import http from 'http';
 import { Server as socketIo } from 'socket.io';
 import portfinder from 'portfinder';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 import dotenv from 'dotenv';
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
@@ -61,11 +66,11 @@ app.use((req, res, next) => {
     }
 });
 
-app.use(express.static(path.join('app', 'build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join('app', 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.get('/scoreboard/:gameCode', (req, res) => {
