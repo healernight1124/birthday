@@ -34,7 +34,7 @@ const startServer = (port) => {
     });
 };
 
-const PORT = process.env.REACT_APP_SERVER_PORT;
+const PORT = process.env.REACT_APP_SERVER_PORT || 50000;
 startServer(PORT);
 
 const io = new socketIo(server, {
