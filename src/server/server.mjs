@@ -2,20 +2,9 @@ import express from 'express';
 import http from 'http';
 import { Server as socketIo } from 'socket.io';
 import portfinder from 'portfinder';
+import path from 'path';
 
 const app = express();
-
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
-
 const server = http.createServer(app);
 const io = new socketIo(server, {
     cors: {
@@ -29,6 +18,35 @@ const io = new socketIo(server, {
 const activeGames = {};
 let scoreboard = [];
 
+// Middleware
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+app.get('/scoreboard/:gameCode', (req, res) => {
+    const { gameCode } = req.params;
+    if (scoreboard[gameCode]) {
+        res.json(scoreboard[gameCode]);
+    } else {
+        res.status(404).json({ error: 'Game not found' });
+    }
+});
+
+// Socket.io events
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
@@ -48,7 +66,7 @@ io.on('connection', (socket) => {
     socket.on('join', ({ gameCode, name }) => {
         if (activeGames[gameCode]) {
             const playerExists = scoreboard[gameCode]?.some(player => player.name === name);
-            if(!playerExists) {
+            if (!playerExists) {
                 socket.join(gameCode);
                 activeGames[gameCode].players += 1;
                 scoreboard[gameCode].push({ name: name, score: 0 });
@@ -63,10 +81,10 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('startGame', ({ gameCode}) => {
+    socket.on('startGame', ({ gameCode }) => {
         if (activeGames[gameCode]) {
             console.log(`Game started for: ${gameCode}`);
-            io.to(gameCode).emit('startGame', {gameCode});
+            io.to(gameCode).emit('startGame', { gameCode });
         }
     });
 
@@ -122,15 +140,7 @@ io.on('connection', (socket) => {
     }
 });
 
-app.get('/scoreboard/:gameCode', (req, res) => {
-    const { gameCode } = req.params;
-    if (scoreboard[gameCode]) {
-        res.json(scoreboard[gameCode]);
-    } else {
-        res.status(404).json({ error: 'Game not found' });
-    }
-});
-
+// Start server
 const startServer = (port) => {
     server.listen(port, (err) => {
         if (err) {
