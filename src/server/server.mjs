@@ -3,10 +3,7 @@ import http from 'http';
 import { Server as socketIo } from 'socket.io';
 import portfinder from 'portfinder';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -36,7 +33,7 @@ const startServer = (port) => {
     });
 };
 
-const PORT = process.env.PORT || 50000;
+const PORT = 50000;
 startServer(PORT);
 
 const io = new socketIo(server, {
@@ -63,11 +60,11 @@ app.use((req, res, next) => {
     }
 });
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join('app', 'build')));
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join('app', 'build', 'index.html'));
 });
 
 app.get('/scoreboard/:gameCode', (req, res) => {
