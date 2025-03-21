@@ -19,7 +19,6 @@ function App() {
                 <Route path="/game/:gameCode/:playerName" element={<GameScreen />} />
                 <Route path="/thank-you" element={<ThankYou />} />
                 <Route path="/scoreboard/:gameCode" element={<Scoreboard />} />
-
             </Routes>
         </Router>
     );
