@@ -2,9 +2,17 @@
 import {io} from 'socket.io-client';
 
 const initSocket = async () => {
-    const response = await fetch(`/api/config`);
-    const data = await response.json();
-    return io(`${process.env.REACT_APP_URL}:${data.port}`);
+    try {
+        const response = await fetch(`/api/config`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return io(`${process.env.REACT_APP_URL}:${data.port}`);
+    } catch (error) {
+        console.error('Failed to initialize socket:', error);
+        throw error;
+    }
 };
 
 // Ensure a single shared socket connection
