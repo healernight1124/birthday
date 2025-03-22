@@ -1,5 +1,5 @@
 import express from 'express';
-import http from 'http';
+import https from 'https';
 import { Server as socketIo } from 'socket.io';
 import portfinder from 'portfinder';
 import path from 'path';
@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer(app);
 
 // Start server
 const startServer = (port) => {
