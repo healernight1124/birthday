@@ -37,11 +37,11 @@ const io = new socketIo(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"],
-        allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
         credentials: true
     },
-    transports: ['websocket', 'polling'],
     path: '/socket.io',
+    transports: ['websocket', 'polling'],
+    allowEIO3: true,
     pingTimeout: 60000,
     pingInterval: 25000
 });
@@ -49,14 +49,13 @@ const io = new socketIo(server, {
 const activeGames = {};
 let scoreboard = [];
 
-// Update CORS middleware
+// Add CORS middleware
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Credentials", "true");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Credentials', 'true');
     
-    // Handle preflight requests
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }

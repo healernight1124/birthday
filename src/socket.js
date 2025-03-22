@@ -6,13 +6,14 @@ const SOCKET_URL = window.location.hostname === 'localhost'
     : `https://${window.location.hostname}`;
 
 const socket = io(SOCKET_URL, {
+    path: '/socket.io',
     transports: ['websocket', 'polling'],
     secure: true,
     rejectUnauthorized: false,
-    path: '/socket.io',
     reconnection: true,
     reconnectionAttempts: 5,
-    reconnectionDelay: 1000
+    reconnectionDelay: 1000,
+    withCredentials: true
 });
 
 socket.on('connect_error', (error) => {
