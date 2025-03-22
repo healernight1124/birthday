@@ -14,7 +14,7 @@ const JoinScreen = () => {
         //     const response = await fetch(`/api/config`);
         //     const data = await response.json();
         //     console.log('Config:', data);
-            const newSocket = io(`http://${window.location.hostname}:50000`);
+            const newSocket = io(`http://54.237.177.0:50000`);
             setSocket(newSocket);
 
             newSocket.on('joinResponse', ({ valid, nameExists }) => {

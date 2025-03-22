@@ -15,7 +15,7 @@ const HostScreen = () => {
         //     const response = await fetch(`/api/config`);
         //     const data = await response.json();
         //     console.log('Config:', data);
-            const newSocket = io(`http://${window.location.hostname}:50000`);
+            const newSocket = io(`http://54.237.177.0:50000`);
             console.log("window.location.hostname: ", window.location.hostname);
             setSocket(newSocket);
             newSocket.emit('createGame', { gameCode });

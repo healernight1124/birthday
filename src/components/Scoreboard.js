@@ -12,11 +12,11 @@ const Scoreboard = () => {
         //     const response = await fetch(`/api/config`);
         //     const data = await response.json();
         //     console.log('Config:', data);
-            const newSocket = io(`http://${window.location.hostname}:50000`);
+            const newSocket = io(`http://54.237.177.0:50000`);
             setSocket(newSocket);
 
             // Fetch the initial scoreboard data from the server
-            fetch(`http://${window.location.hostname}:50000/scoreboard/${gameCode}`)
+            fetch(`http://54.237.177.0:50000/scoreboard/${gameCode}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
