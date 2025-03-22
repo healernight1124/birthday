@@ -15,57 +15,52 @@ const __dirname = dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 
-// Start server
+// Update the port configuration
+const PORT = process.env.PORT || 10000; // Use environment port or fallback to 10000
+
+// Update server initialization
 const startServer = (port) => {
-    server.listen(port, (err) => {
+    server.listen(port, '0.0.0.0', (err) => { // Listen on all network interfaces
         if (err) {
-            if (err.code === 'EADDRINUSE') {
-                console.error(`Port ${port} is already in use. Trying next port...`);
-                portfinder.getPortPromise({ port: port + 1 })
-                    .then((newPort) => {
-                        startServer(newPort);
-                    })
-                    .catch((err) => {
-                        console.error(`No available ports: ${err}`);
-                        process.exit(1);
-                    });
-            } else {
-                console.error(`Error starting server: ${err}`);
-                process.exit(1);
-            }
+            console.error(`Error starting server: ${err}`);
+            process.exit(1);
         } else {
             console.log(`Server running on port ${port}`);
         }
     });
 };
 
-const PORT = 50000;
 startServer(PORT);
 
+// Update Socket.IO configuration
 const io = new socketIo(server, {
     cors: {
-        origin: `*`,
-        methods: ['GET', 'POST'],
-        allowedHeaders: ['Origin', 'X-Requested-With', 'ContentType', 'Accept'],
+        origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
         credentials: true
     },
-    transports: ['websocket', 'polling']
+    transports: ['websocket', 'polling'],
+    path: '/socket.io',
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
 const activeGames = {};
 let scoreboard = [];
 
-// Middleware
+// Update CORS middleware
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+    
+    // Handle preflight requests
     if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
+        return res.status(200).end();
     }
+    next();
 });
 
 app.use(express.static(path.join(__dirname, 'build')));
