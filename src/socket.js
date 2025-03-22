@@ -2,6 +2,6 @@
 import {io} from 'socket.io-client';
 
 // Ensure a single shared socket connection
-const socket = io(`http://${window.location.hostname}:50000`);
+const socket = io(`window.location.origin`);
 
 export default socket;
